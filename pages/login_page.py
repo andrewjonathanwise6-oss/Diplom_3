@@ -19,6 +19,6 @@ class LoginPage(BasePage):
         self.click(AuthLocators.FORGOT_LINK)
 
     def tokens_cleared(self):
-        return self.driver.execute_script(
+        return self.execute_script(
             "return !localStorage.getItem('accessToken') && !localStorage.getItem('refreshToken')"
         )
