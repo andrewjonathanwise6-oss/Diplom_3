@@ -3,6 +3,7 @@ from urllib.parse import urlsplit
 import allure
 from selenium.common.exceptions import ElementClickInterceptedException, StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 
 from locators.common_locators import CommonLocators
@@ -54,6 +55,44 @@ class BasePage:
         element = self.visible(locator)
         element.clear()
         element.send_keys(value)
+
+    def find_all(self, locator):
+        return self.driver.find_elements(*locator)
+
+    def wait_for_elements(self, locator, evaluate, message='', timeout=None):
+        return self.wait(lambda driver: evaluate(driver.find_elements(*locator)), message, timeout)
+
+    def text_in_child(self, element, locator):
+        return element.find_element(*locator).text
+
+    def execute_script(self, script, *args):
+        return self.driver.execute_script(script, *args)
+
+    def is_firefox(self):
+        return self.driver.capabilities['browserName'] == 'firefox'
+
+    def drag_and_drop(self, source, target):
+        ActionChains(self.driver).drag_and_drop(source, target).perform()
+
+    def active_element(self):
+        return self.driver.switch_to.active_element
+
+    def bun_counter_equals(self, card_locator, counter_locator, expected):
+        def matches(elements):
+            return any(
+                card.find_element(*counter_locator).text == str(expected)
+                for card in elements if card.is_displayed()
+            )
+        return self.wait_for_elements(card_locator, matches, 'Счётчик булки не изменился')
+
+    def wait_order_number(self, locator):
+        def order_number(elements):
+            return next(
+                (int(e.text) for e in elements
+                 if e.is_displayed() and e.text.isdigit() and int(e.text) not in (0, 9999)),
+                False
+            )
+        return self.wait_for_elements(locator, order_number, 'Не получен номер заказа', 60)
 
     @allure.step('Открыть страницу')
     def open(self):
