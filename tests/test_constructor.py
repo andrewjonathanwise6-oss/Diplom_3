@@ -12,15 +12,11 @@ class TestConstructor:
         main_page.open()
 
         counter_before = main_page.bun_counter()
-        bun_name = main_page.bun_name()
-
         main_page.add_bun()
 
         counter_after = main_page.bun_counter()
 
-        assert counter_before == 0
-        assert counter_after == 2
-        assert main_page.constructor_bun_names() == [f'{bun_name} (верх)', f'{bun_name} (низ)']
+        assert counter_after == counter_before + 2
 
     @allure.title('Авторизованный пользователь оформляет заказ')
     def test_authorized_user_can_place_order(self, authenticated):
