@@ -23,6 +23,6 @@ class ResetPasswordPage(BasePage):
         wrapper = self.visible(AuthLocators.PASSWORD_WRAPPER)
         return {
             'type': field.get_attribute('type'),
-            'focused': field == self.driver.switch_to.active_element,
+            'focused': field == self.active_element(),
             'highlighted': 'input_status_active' in wrapper.get_attribute('class').split(),
         }
