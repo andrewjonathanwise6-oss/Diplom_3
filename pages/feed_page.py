@@ -44,7 +44,7 @@ class FeedPage(BasePage):
     @allure.step('Найти свой заказ в общей ленте')
     def order_number(self, number):
         card = self.visible(FeedLocators.order(number))
-        return int(card.find_element(*FeedLocators.CARD_NUMBER).text.lstrip('#'))
+        return int(self.text_in_child(card, FeedLocators.CARD_NUMBER).lstrip('#'))
 
     def wait_processing_order(self, number):
         def own_order_visible(elements):
