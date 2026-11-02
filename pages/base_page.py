@@ -125,6 +125,21 @@ class BasePage:
 
     @allure.step('Закрыть модальное окно по крестику')
     def close_modal(self):
-        # Overlay модалки виден намеренно; общее ожидание overlay здесь неприменимо.
-        self.visible(CommonLocators.CLOSE_MODAL).click()
-        self.wait(lambda d: all(not e.is_displayed() for e in d.find_elements(*CommonLocators.MODAL)))
+        # Затемнение является частью открытой модалки: обычный click() ждёт его
+        # исчезновения и здесь неприменим. Firefox может кратковременно
+        # перехватывать клик во время анимации, поэтому повторяем нативный клик.
+        def close_when_clickable(driver):
+            button = EC.element_to_be_clickable(CommonLocators.CLOSE_MODAL)(driver)
+            if not button:
+                return False
+            try:
+                button.click()
+                return True
+            except ElementClickInterceptedException:
+                return False
+
+        self.wait(close_when_clickable, 'Крестик модального окна остаётся перекрытым')
+        self.wait(
+            lambda d: all(not e.is_displayed() for e in d.find_elements(*CommonLocators.MODAL)),
+            'Модальное окно не закрылось',
+        )
