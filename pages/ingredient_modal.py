@@ -17,4 +17,4 @@ class IngredientModal(BasePage):
         self.close_modal()
 
     def is_closed(self):
-        return all(not e.is_displayed() for e in self.driver.find_elements(*CommonLocators.MODAL))
+        return all(not e.is_displayed() for e in self.find_all(CommonLocators.MODAL))
