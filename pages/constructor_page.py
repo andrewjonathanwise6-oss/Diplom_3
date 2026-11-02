@@ -23,6 +23,7 @@ class ConstructorPage(BasePage):
     @allure.step('Добавить булку в конструктор')
     def add_bun(self):
         self.wait_no_overlay()
+        counter_before = self.bun_counter()
         source = self._bun()
         target = self.visible(ConstructorLocators.DROP_ZONE)
         if self.is_firefox():
@@ -30,7 +31,7 @@ class ConstructorPage(BasePage):
                 self._html5_drag(source, target)
         else:
             self.drag_and_drop(source, target)
-        self.bun_counter_equals(ConstructorLocators.BUN_CARD, ConstructorLocators.CARD_COUNTER, 2)
+        self.bun_counter_equals(ConstructorLocators.BUN_CARD, ConstructorLocators.CARD_COUNTER, counter_before + 2)
 
     def _html5_drag(self, source, target):
         """Обход незавершённого native drag в Firefox/geckodriver.
